@@ -1,0 +1,10 @@
+.status-bar {
+  background-color: #1e293b;
+  color: white;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-family: monospace;
+}
+.status-bar.error {
+  background-color: #dc2626;
+}
