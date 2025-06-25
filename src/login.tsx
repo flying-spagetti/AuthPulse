@@ -2,12 +2,15 @@ import React, { useState } from "react";
 import "./login.css";
 import { useNavigate } from "react-router-dom";
 import StatusBar from "./Status";
+import { useEffect } from "react";
 
 interface FormData {
     username: string;
     password: string;
 }
-
+interface statusBarprops{
+    activeState:string|null;
+}
 
 
 export default function Login() {
@@ -81,6 +84,38 @@ export default function Login() {
         }
     };
 
+    const [activeState ,setactiveState]=useState<string|null> (null);
+
+        useEffect(() => {
+        const checkAuth = async () => {
+            const endpoints = [
+                { name: "Node.js (3000)", url: "http://localhost:3000/api/protected" },
+                { name: "Go (8080)", url: "http://localhost:8080/api/protected" },
+            ];
+
+            for (const endpoint of endpoints) {
+                try {
+                    const res = await fetch(endpoint.url, {
+                        method: "GET",
+                        credentials: "include",
+                    });
+
+                    if (res.ok) {
+                        console.log(`Authenticated via ${endpoint.name}`);
+                        setactiveState(endpoint.name);
+                        navigate("/page1");
+                        return;
+                    }
+                } catch (err) {
+                    console.warn(`Failed auth check for ${endpoint.name}`);
+                }
+            }
+        };
+
+        checkAuth();
+    }, [navigate]);
+
+
     return (
         <div className="login-container">
             <div className="login-card">
@@ -88,6 +123,11 @@ export default function Login() {
                     <h1 className="login-title">Welcome Back</h1>
                     <p className="login-subtitle">Sign in to your account</p>
                 </div>
+                <div className="branding">
+                    <img src="src/assets/react.svg" alt="Logo" className="logo" />
+                    <h2 className="brand-tagline">SecureGate Login Portal</h2>
+                    </div>
+
 
                 <form onSubmit={handleSubmit} className="login-form">
                     <div
@@ -106,6 +146,10 @@ export default function Login() {
                             onBlur={() => handleBlur("username")}
                             autoComplete="username"
                         />
+                        {formData.username === "" && isSubmitting && (
+                            <span className="error-text">Username is required</span>
+                            )}
+
                         <div className="underline"></div>
                     </div>
 
@@ -248,7 +292,10 @@ export default function Login() {
                             
                         </div>
                         <p>Backend Service Request Info:</p>
-                        <StatusBar/>
+                        <StatusBar  />
+
+                        <p className="secure-note">🔒 Your credentials are encrypted and secure.</p>
+
                     </div>
                 </div>
             </div>

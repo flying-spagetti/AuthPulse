@@ -48,8 +48,15 @@ export default function StatusBar() {
 
   return (
     <div className="status-bar">
-      ✅ Connected to <strong>{info.language}</strong> ({info.framework}) on{" "}
-      <strong>port {activePort}</strong> | Env: {info.env || "development"}
-    </div>
+    <p>✅ Connected to <strong>{info.language}</strong> ({info.framework})</p>
+    <ul>
+      <li>🌐 Port: <strong>{activePort}</strong></li>
+      <li>🔐 JWT Enabled: <strong>{info.jwt}</strong></li>
+      <li>🧂 Hash: <strong>{info.passwordHash}</strong></li>
+      <li>🆔 ULID: <strong>{info.ulid ? "Yes" : "No"}</strong></li>
+      <li>🧪 Env: <strong>{info.env || "development"}</strong></li>
+      <li>🔒 Secure Cookies: <strong>{info.secure ? "Yes" : "No"}</strong></li>
+    </ul>
+  </div>
   );
 }

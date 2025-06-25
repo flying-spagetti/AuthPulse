@@ -55,6 +55,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&input)
 	if err != nil || input.Username != username || input.Password != password {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		fmt.Println("Login Attempted")
 		return
 	}
 
@@ -70,12 +71,12 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Set cookie
+	//Set Cookie
 	http.SetCookie(w, &http.Cookie{
 		Name:     "token",
 		Value:    tokenString,
 		HttpOnly: true,
-		Secure:   false, 
+		Secure:   true, 
 		SameSite: http.SameSiteLaxMode,
 		Path:     "/",
 		MaxAge:   3600,
@@ -87,7 +88,10 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+
+
 func jwtMiddleware(next http.HandlerFunc) http.HandlerFunc {
+	var count int = 0
 	return func(w http.ResponseWriter, r *http.Request) {
 		cookie, err := r.Cookie("token")
 		if err != nil {
@@ -98,6 +102,8 @@ func jwtMiddleware(next http.HandlerFunc) http.HandlerFunc {
 		tokenStr := cookie.Value
 		claims := jwt.MapClaims{}
 		token, err := jwt.ParseWithClaims(tokenStr, claims, func(token *jwt.Token) (interface{}, error) {
+			fmt.Println("Middleware is being accessed for times",count)
+			count++
 			return jwtKey, nil
 		})
 
@@ -114,6 +120,7 @@ func protectedHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	fmt.Fprint(w, `{"message":"You have access to the protected route!"}`)
 }
+
 func infoHandler(w http.ResponseWriter, r *http.Request) {
 	info := map[string]interface{}{
 		"language":      "Go",
